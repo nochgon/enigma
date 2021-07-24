@@ -7,10 +7,10 @@ from .. import code_map as cm
 
 class Factory:
     @classmethod
-    def create(cls, map_char_reflector: Dict[str, str], encoder: ec.Encoder
+    def create(cls, map_char_scramber: Dict[str, str], encoder: ec.Encoder
                ) -> srb.Scramber:
         map_code = {encoder.encode(char_i): encoder.encode(char_o)
-                    for char_i, char_o in map_char_reflector.items()}
+                    for char_i, char_o in map_char_scramber.items()}
         code_map = cm.Factory.create(map_code)
         return srb.Scramber(code_map, _direct=False)
 
