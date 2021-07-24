@@ -5,11 +5,12 @@ from .. import code_map as cm
 
 class Scramber:
     def __init__(self, code_map: cm.CodeMap, step: int = 0,
-                 _direct=True) -> None:
+                 num_ring=0, _direct=True) -> None:
         if _direct:
             raise NotImplementedError('private initiator')
         self.__code_map = code_map
         self.__step = step
+        self.__num_ring = num_ring
 
     @property
     def size(self) -> int:
@@ -18,13 +19,16 @@ class Scramber:
     def set_step(self, step: int) -> None:
         self.__step = step
 
+    def set_ring(self, num_ring: int) -> None:
+        self.__num_ring = num_ring
+
     def add_step(self) -> bool:
         """
         ステップを1つ進める。一周回った場合にTrueを返す
         """
         step_next = self.__step + 1
         self.__step = step_next % self.__code_map.size
-        return True if step_next >= self.__code_map.size else False
+        return (True if self.__step == self.__num_ring else False)
 
     def scramble(self, num_input: int) -> int:
         """
