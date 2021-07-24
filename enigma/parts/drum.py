@@ -59,14 +59,14 @@ class Drum:
 
     def on_reverse(self, position: int) -> None:
         if 1 <= position <= self.__size:
-            index = self.__positions_scramber[position - 1]
+            index = self.__positions_scramber[position - 1] - 1
             self.__scrambers[index].on_reverse()
         else:
             raise ValueError(f'positionが不正: {position}')
 
     def off_reverse(self, position: int) -> None:
         if 1 <= position <= self.__size:
-            index = self.__positions_scramber[position - 1]
+            index = self.__positions_scramber[position - 1] - 1
             self.__scrambers[index].off_reverse()
         else:
             raise ValueError(f'positionが不正: {position}')
