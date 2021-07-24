@@ -16,6 +16,5 @@ class Factory:
 
     @classmethod
     def create_random(cls, size, random_seed: Any = None) -> rfl.Reflector:
-        code_map = cm.Factory.create_random(size, random_seed,
-                                            can_self_return=False)
+        code_map = cm.Factory.create_paired_random(size, random_seed)
         return rfl.Reflector(code_map, _direct=False)

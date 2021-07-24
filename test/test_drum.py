@@ -22,7 +22,7 @@ def test_drum(drum: parts.Drum, rotations_start: List[int],
         print(f'time({i}): {drum_test.transfer(output)}')
 
 
-size = 5
+size = 6
 scrambers = [
     parts.ScramberFactory.create_random(size, 'scramber') for i in range(3)
 ]
