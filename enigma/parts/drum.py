@@ -55,7 +55,7 @@ class Drum:
             raise ValueError(f'リング指定が不正: {str(nums_ring)}')
 
         for position, num_ring in zip(self.__positions_scramber, nums_ring):
-            self.__scrambers[position - 1].set_step(num_ring)
+            self.__scrambers[position - 1].set_ring(num_ring)
 
     def on_reverse(self, position: int) -> None:
         if 1 <= position <= self.__size:
