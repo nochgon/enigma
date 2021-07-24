@@ -5,9 +5,12 @@ sys.path.append('../enigma')
 
 import enigma
 
-engm = enigma.EnigmaFactory.create('alphabet', 3, (0, 1, 2, 3, 4), 3)
+engm = enigma.EnigmaFactory.create_random('alphabet', 3,
+                                          (0, 1, 2), 'reflector1')
 engm.arrange_scrambers(1, 3, 2)
-engm.connect_plug(('B', 'D'), ('C', 'K'), ('X', 'A'))
+engm.connect_plug('B', 'D')
+engm.connect_plug('C', 'K')
+engm.connect_plug('X', 'A')
 
 text = ('that if the british empire and its commitwealth last thousand years\n'
         'they will still say\n'
