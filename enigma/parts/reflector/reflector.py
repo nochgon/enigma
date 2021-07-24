@@ -5,6 +5,8 @@ class Reflector:
     def __init__(self, code_map: cm.CodeMap, _direct=True) -> None:
         if _direct:
             raise NotImplementedError('private initiator')
+        if code_map.size % 2 != 0:
+            raise ValueError('リフレクターの口は偶数のみ')
         self.__code_map = code_map
 
     @property
