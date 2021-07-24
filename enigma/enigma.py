@@ -32,8 +32,8 @@ class Enigma:
         num_rings = [self.__encoder.encode(char) for char in ring_key]
         self.__drum.set_ring(*num_rings)
 
-    def on_reverse(self, position: int) -> N)one:
-        pass
+    def on_reverse(self, position: int) -> None:
+        self.__drum.on_reverse(position)
 
     def off_reverse(self, position: int) -> None:
         pass
