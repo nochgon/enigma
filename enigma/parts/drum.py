@@ -65,7 +65,11 @@ class Drum:
             raise ValueError(f'positionが不正: {position}')
 
     def off_reverse(self, position: int) -> None:
-        pass
+        if 1 <= position <= self.__size:
+            index = self.__positions_scramber[position - 1]
+            self.__scrambers[index].off_reverse()
+        else:
+            raise ValueError(f'positionが不正: {position}')
 
     def transfer(self, num_input) -> int:
         num_o: int = num_input
