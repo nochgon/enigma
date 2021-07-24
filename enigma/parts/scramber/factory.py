@@ -15,6 +15,6 @@ class Factory:
         return srb.Scramber(code_map, _direct=False)
 
     @classmethod
-    def create_random(cls, size, random_seed: Any = None) -> srb.Scramber:
+    def create_random(cls, size: int, random_seed: Any = None) -> srb.Scramber:
         code_map = cm.Factory.create_random(size, random_seed)
         return srb.Scramber(code_map, _direct=False)

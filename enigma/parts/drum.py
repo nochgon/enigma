@@ -7,15 +7,14 @@ from . import reflector as rflc
 class Drum:
     def __init__(self, scrambers: List[scrmb.Scramber],
                  reflector: rflc.Reflector,
-                 positions_scramber: Tuple[int, ...] = None, _direct=True
+                 positions_scramber: Tuple[int, ...] = None
                  ) -> None:
-        if _direct:
-            raise NotImplementedError('private initiator')
         if not positions_scramber:
+            # スクランバーの順番指定がない場合は(1, 2, 3, ...)
             positions_scramber = tuple([i for i in range(len(scrambers))])
 
         size_reflector = reflector.size
-        if any([scramber != size_reflector for scramber in scrambers]):
+        if any([scramber.size != size_reflector for scramber in scrambers]):
             raise ValueError('スクランバーかリフレクターの大きさが一致していない')
 
         self.__scrambers = scrambers
@@ -45,10 +44,24 @@ class Drum:
                     for rotation in rotations]):
             raise ValueError(f'ポジション指定が不正: {str(rotations)}')
 
-        i_rotate = 0
-        for position in self.__positions_scramber:
-            self.__scrambers[position - 1].set_step(rotations[i_rotate])
-            i_rotate += 1
+        for position, rotation in zip(self.__positions_scramber, rotations):
+            self.__scrambers[position - 1].set_step(rotation)
+
+    def set_ring(self, *nums_ring: int) -> None:
+        if len(nums_ring) != self.__len_scrambers:
+            raise ValueError(f'指定個数が違う。(len_positions: {len(nums_ring)})')
+        if not any([0 <= num < self.__size
+                    for num in nums_ring]):
+            raise ValueError(f'リング指定が不正: {str(nums_ring)}')
+
+        for position, num_ring in zip(self.__positions_scramber, nums_ring):
+            self.__scrambers[position - 1].set_step(num_ring)
+
+    def on_reverse(self, position: int) -> None:
+        pass
+
+    def off_reverse(self, position: int) -> None:
+        pass
 
     def transfer(self, num_input) -> int:
         num_o: int = num_input
