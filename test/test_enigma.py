@@ -34,7 +34,7 @@ map_str_reflector = {
 
 engm = enigma.EnigmaFactory.create('alphabet', maps_str_scramber,
                                    map_str_reflector)
-engm
+engm.set_rings('CAT')
 
 text = ('that if the british empire and its commitwealth last thousand years\n'
         'they will still say\n'

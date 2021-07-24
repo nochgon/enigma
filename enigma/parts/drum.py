@@ -11,7 +11,7 @@ class Drum:
                  ) -> None:
         if not positions_scramber:
             # スクランバーの順番指定がない場合は(1, 2, 3, ...)
-            positions_scramber = tuple([i for i in range(len(scrambers))])
+            positions_scramber = tuple([i + 1 for i in range(len(scrambers))])
 
         size_reflector = reflector.size
         if any([scramber.size != size_reflector for scramber in scrambers]):
