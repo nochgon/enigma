@@ -36,7 +36,7 @@ engm = enigma.EnigmaFactory.create('alphabet', maps_str_scramber,
                                    map_str_reflector)
 engm.set_rings('CAT')
 engm.arrange_scrambers(2, 1, 3)
-engm.on_reverse(2)
+engm.on_reverse(3)
 
 text = ('that if the british empire and its commitwealth last thousand years\n'
         'they will still say\n'

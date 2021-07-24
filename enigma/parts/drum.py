@@ -48,7 +48,7 @@ class Drum:
             self.__scrambers[position - 1].set_step(rotation)
 
     def set_ring(self, *nums_ring: int) -> None:
-        if len(nums_ring) != self.__len_scrambers:
+        if len(nums_ring) != self.__len_scrambers - 1:
             raise ValueError(f'指定個数が違う。(len_positions: {len(nums_ring)})')
         if not any([0 <= num < self.__size
                     for num in nums_ring]):
@@ -85,3 +85,6 @@ class Drum:
             if not self.__scrambers[position - 1].add_step():
                 break
         return num_o
+
+    def __len__(self) -> int:
+        return len(self.__scrambers)

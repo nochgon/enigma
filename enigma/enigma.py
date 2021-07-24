@@ -8,6 +8,10 @@ class Enigma:
         self.__plug_link = plug_link
         self.__encoder = encoder
 
+    @property
+    def len_drum(self) -> int:
+        return len(self.__drum)
+
     def execute(self, text: str) -> str:
         rsl_text = ''
         for char in text:
