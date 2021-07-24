@@ -36,7 +36,7 @@ class Enigma:
         self.__drum.on_reverse(position)
 
     def off_reverse(self, position: int) -> None:
-        pass
+        self.__drum.off_reverse(position)
 
     def connect_plug(self, *pair_plugs: str) -> None:
         if len(pair_plugs) != 2:
