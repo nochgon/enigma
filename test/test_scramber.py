@@ -6,11 +6,10 @@ sys.path.append(str(pathlib.Path.cwd()))
 import enigma.parts.scramber as scr
 
 
-def test_scramble(len_outputs: int, step_start=0, num_input=0,
-                  num_ring=0):
+def test_scramble(scrmb: scr.Scramber, len_outputs: int, step_start=0,
+                  num_input=0):
     outputs = list()
     scrmb.set_step(step_start)
-    scrmb.set_ring(num_ring)
     for i in range(len_outputs):
         output = scrmb.scramble(num_input)
         outputs.append(output)
@@ -35,6 +34,8 @@ print(f'test1_rev: {scrmb.scramble_reverse(test1)}')
 print(f'test2_rev: {scrmb.scramble_reverse(test2)}')
 print(f'test3_rev: {scrmb.scramble_reverse(test3)}')
 
-test_scramble(15, 0)
+scrmb.set_ring(1)
+test_scramble(scrmb, 15, 0)
 print()
-test_scramble(15, 0, num_ring=1)
+scrmb.on_reverse()
+test_scramble(scrmb, 15, 0)

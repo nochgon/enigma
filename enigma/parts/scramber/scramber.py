@@ -5,12 +5,14 @@ from .. import code_map as cm
 
 class Scramber:
     def __init__(self, code_map: cm.CodeMap, step: int = 0,
-                 num_ring=0, _direct=True) -> None:
+                 num_ring: int = 0, is_reverse: bool = False, _direct=True
+                 ) -> None:
         if _direct:
             raise NotImplementedError('private initiator')
         self.__code_map = code_map
         self.__step = step
         self.__num_ring = num_ring
+        self.__step_move = -1 if is_reverse else 1
 
     @property
     def size(self) -> int:
@@ -22,11 +24,17 @@ class Scramber:
     def set_ring(self, num_ring: int) -> None:
         self.__num_ring = num_ring
 
+    def on_reverse(self) -> None:
+        self.__step_move = -1
+
+    def off_reverse(self) -> None:
+        self.__step_move = 1
+
     def add_step(self) -> bool:
         """
         ステップを1つ進める。一周回った場合にTrueを返す
         """
-        step_next = self.__step + 1
+        step_next = self.__step + self.__step_move
         self.__step = step_next % self.__code_map.size
         return (True if self.__step == self.__num_ring else False)
 
