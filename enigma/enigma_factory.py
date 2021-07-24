@@ -5,18 +5,13 @@ from . import parts
 
 
 class EnigmaFactory:
-    __map_command_size = {
-        'alphabet': 26
-    }
-
     @classmethod
     def create_random(cls, command: str, len_scrambers: int,
                       seeds_scramber: Tuple[Any, ...] = None,
                       seed_reflector: Any = None
                       ) -> enigma.Enigma:
-        if command not in cls.__map_command_size:
-            raise ValueError(f'commandが不正: {command}')
         # encoderを先に生成。サイズの情報を持っているため。
+        # commandが不正なら、EncoderFactory側でエラーが発生する。
         encoder = parts.EncoderFactory.create(command)
 
         # 乱数シードの指定があるならそれを使って生成
