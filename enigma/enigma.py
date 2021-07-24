@@ -28,6 +28,16 @@ class Enigma:
         rotations = [self.__encoder.encode(char) for char in rotate_key]
         self.__drum.rotate_scrambers(*rotations)
 
+    def set_rings(self, ring_key: str) -> None:
+        num_rings = [self.__encoder.encode(char) for char in ring_key]
+        self.__drum.set_ring(*num_rings)
+
+    def on_reverse(self, position: int) -> N)one:
+        pass
+
+    def off_reverse(self, position: int) -> None:
+        pass
+
     def connect_plug(self, *pair_plugs: str) -> None:
         if len(pair_plugs) != 2:
             raise ValueError(f'pair_plugsの個数が不正: {len(pair_plugs)}')
