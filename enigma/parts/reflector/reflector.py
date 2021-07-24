@@ -12,9 +12,6 @@ class Reflector:
         return self.__code_map.size
 
     def reflect(self, num_input: int) -> int:
-        """
-        順方向に変換
-        """
         return self.__code_map.transfer(num_input)
 
     def __deepcopy__(self):

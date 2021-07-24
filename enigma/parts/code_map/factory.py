@@ -12,7 +12,7 @@ class Factory:
     @classmethod
     def create_random(cls, size: int, random_seed: Any = None,
                       can_self_return: bool = True) -> cm.CodeMap:
-        if random_seed:
+        if random_seed is not None:
             random.seed(random_seed)
 
         list_output = random.sample([i for i in range(size)], size)

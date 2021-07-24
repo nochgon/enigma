@@ -5,7 +5,26 @@ sys.path.append(str(pathlib.Path.cwd()))
 
 import enigma.parts.scramber as scr
 
-scrmb = scr.Scramber.create(10, 0)
+
+def test_scramble(len_outputs: int, step_start=0, num_input=0):
+    outputs = list()
+    scrmb.set_step(step_start)
+    for i in range(len_outputs):
+        output = scrmb.scramble(num_input)
+        outputs.append(output)
+        print(f'test1(step: {i}): {output}')
+        print(f'judge_step: {scrmb.add_step()}')
+
+    print(f'\nnum_input: {num_input}')
+    scrmb.set_step(step_start)
+    i = 0
+    for output in outputs:
+        print(f'test_rev(step: {i}): {scrmb.scramble_reverse(output)}')
+        scrmb.add_step()
+        i += 1
+
+
+scrmb = scr.Factory.create_random(10, 0)
 test1 = scrmb.scramble(1)
 test2 = scrmb.scramble(2)
 test3 = scrmb.scramble(3)
@@ -14,16 +33,6 @@ print(f'test1_rev: {scrmb.scramble_reverse(test1)}')
 print(f'test2_rev: {scrmb.scramble_reverse(test2)}')
 print(f'test3_rev: {scrmb.scramble_reverse(test3)}')
 
-outputs = list()
-for i in range(15):
-    output = scrmb.scramble(0)
-    outputs.append(output)
-    print(f'test1(step: {i}): {output}')
-    print(f'judge_step: {scrmb.add_step()}')
-
-scrmb.set_step(0)
-i = 0
-for output in outputs:
-    print(f'test1(step: {i}): {scrmb.scramble_reverse(output)}')
-    scrmb.add_step()
-    i += 1
+test_scramble(15, 0)
+print()
+test_scramble(15, 1)
