@@ -1,6 +1,6 @@
 import pathlib
 
-import solver
+import src
 
 # 目的の暗号文
 text_target = (
@@ -30,7 +30,7 @@ str_reflector = 'yruh qsld pxng okmi ebfz cwvj at'
 folder_result = pathlib.Path.cwd() / 'result'
 name_file = '暗号解読_エニグマ'
 
-slvr = solver.Solver(
+slvr = src.solver.EnigmaSolver(
     'alphabet', strs_scramber, str_reflector, (2, 1, 3),
     folder_result, name_file
 )

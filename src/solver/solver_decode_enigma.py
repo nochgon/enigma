@@ -3,11 +3,8 @@ import pathlib
 import csv
 import collections
 import statistics
-import sys
 
-sys.path.append('../enigma')
-
-import enigma
+from .. import enigma
 
 
 class Solver:
