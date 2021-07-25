@@ -5,6 +5,7 @@ import collections
 import statistics
 
 from .. import enigma
+from . import replain_text as rt
 
 
 class Solver:
