@@ -12,6 +12,10 @@ class Enigma:
     def len_drum(self) -> int:
         return len(self.__drum)
 
+    @property
+    def size_encoder(self) -> int:
+        return self.__encoder.size
+
     def execute(self, text: str) -> str:
         rsl_text = ''
         for char in text:

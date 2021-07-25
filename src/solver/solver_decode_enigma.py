@@ -2,7 +2,6 @@ from typing import Deque, List, Optional, Tuple
 import pathlib
 import csv
 import collections
-import statistics
 
 from .. import enigma
 from . import replain_text as rt
@@ -16,6 +15,9 @@ class Solver:
         'index', 'ring_key', 'rotate_key', 'reverse_key',
         'text_replain', 'stdev_str'
     )
+    __list_keys_result = [
+        'ring_key', 'rotate_key', 'reverse_key', 'replain_text', 'stdev_result'
+    ]
 
     def __init__(self, command: str, strs_scramber: List[str],
                  str_reflector: str, positions_scramber: Tuple[int, ...],
@@ -56,9 +58,13 @@ class Solver:
         self.__encoder = encoder
 
     def execute(self, text_target: str, limit_num: Optional[int] = None
-                ) -> Tuple[str, float]:
-        # サーチ条件をキューに格納
-        deque_condition: Deque[Tuple[str, str, int]] = collections.deque()
+                ) -> rt.ReplainText:
+        # サーチ結果はキューに格納し、終了時にcsvへ出力
+        deque_result: Deque[rt.ReplainText] = collections.deque()
+
+        # サーチ実行
+        index = 1
+        text_replain_result: Optional[rt.ReplainText] = None
         for num_ring_key in range(pow(self.__encoder.size,
                                       self.__enigma.len_drum - 1
                                       )):
@@ -76,53 +82,36 @@ class Solver:
                     rotate_key += self.__encoder.decode(num)
                     num_rotate_key -= num * pow(self.__encoder.size, rank)
                 for num_reverse in range(pow(2, self.__enigma.len_drum)):
-                    deque_condition.append((ring_key, rotate_key, num_reverse))
+                    result = rt.ReplainText(text_target, self.__enigma,
+                                            ring_key, rotate_key, num_reverse)
+                    deque_result.append(result)
 
-        # 回数制限がある場合はキューを短くする
-        if limit_num:
-            deque_old = deque_condition
-            deque_condition = collections.deque()
-            for i in range(limit_num):
-                deque_condition.append(deque_old.popleft())
+                    # 標本偏差が最大の翻訳文をキープ
+                    if (not text_replain_result or
+                       text_replain_result.stdev < result.stdev):
+                        text_replain_result = result
 
-        # サーチ実行
-        index = 1
+                    # csv出力
+
+                    if limit_num and limit_num <= index:
+                        self.__export_to_csv(deque_result)
+                        return text_replain_result
+
+        if not text_replain_result:
+            raise ValueError()
+        self.__export_to_csv(deque_result)
+        return text_replain_result
+
+    def __export_to_csv(self, deque_replain_text: Deque[rt.ReplainText]
+                        ) -> None:
         with open(self.__path_result, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(self.__header)
-            stdev_max = 0
-            text_replain_result = ''
-            while len(deque_condition):
-                ring_key, rotate_key, num_reverse = deque_condition.popleft()
-
-                # 回転方向の設定
-                for rank in range(self.__enigma.len_drum):
-                    if num_reverse % pow(2, rank) == 1:
-                        self.__enigma.on_reverse(rank + 1)
-                    else:
-                        self.__enigma.off_reverse(rank + 1)
-
-                self.__enigma.set_rings(ring_key)
-                self.__enigma.rotate_scrambers(rotate_key)
-                text_replain = self.__enigma.execute(text_target)
-
-                counter_char = collections.Counter(text_replain.replace(' ',
-                                                                        ''))
-                list_count = ([count for count in counter_char.values()] +
-                              [0 for i in range(self.__encoder.size -
-                                                len(counter_char))])
-                stdev_result = statistics.stdev(list_count)
-
-                # csv出力
-                writer.writerow((
-                    index, ring_key, rotate_key, format(num_reverse, 'b'),
-                    text_replain, stdev_result
-                ))
+            index = 1
+            while len(deque_replain_text):
+                target = deque_replain_text.popleft()
+                result_dict = target.export_result()
+                result_list = [result_dict[key]
+                               for key in self.__list_keys_result]
+                writer.writerow([index] + result_list)
                 index += 1
-
-                # 不偏分散が最大の翻訳文をキープ
-                if stdev_max >= stdev_result:
-                    text_replain_result = text_replain
-                    stdev_max = stdev_result
-
-        return (text_replain_result, stdev_max)
