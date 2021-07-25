@@ -13,10 +13,10 @@ class Solver:
     }
     __header = (
         'index', 'ring_key', 'rotate_key', 'reverse_key',
-        'text_replain', 'stdev_str'
+        'stdev', 'text_replain'
     )
     __list_keys_result = [
-        'ring_key', 'rotate_key', 'reverse_key', 'replain_text', 'stdev_result'
+        'ring_key', 'rotate_key', 'reverse_key', 'stdev_result', 'replain_text'
     ]
 
     def __init__(self, command: str, strs_scramber: List[str],
@@ -85,6 +85,7 @@ class Solver:
                     result = rt.ReplainText(text_target, self.__enigma,
                                             ring_key, rotate_key, num_reverse)
                     deque_result.append(result)
+                    index += 1
 
                     # 標本偏差が最大の翻訳文をキープ
                     if (not text_replain_result or

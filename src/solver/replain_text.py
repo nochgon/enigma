@@ -11,7 +11,7 @@ class ReplainText:
         # キー設定の保管
         self.__key_ring = ring_key
         self.__key_rotate = rotate_key
-        self.__key_reverse = format(num_reverse, 'b')
+        self.__key_reverse = format(num_reverse, 'b').zfill(engm.len_drum)
 
         # 回転方向の設定
         for rank in range(engm.len_drum):
@@ -36,6 +36,10 @@ class ReplainText:
     @property
     def stdev(self) -> float:
         return self.__stdev
+
+    @property
+    def text(self) -> str:
+        return self.__text
 
     def export_result(self) -> Dict[str, Any]:
         return {

@@ -34,5 +34,5 @@ slvr = src.solver.EnigmaSolver(
     'alphabet', strs_scramber, str_reflector, (2, 1, 3),
     folder_result, name_file
 )
-text_result, stdev = slvr.execute(text_target, 10)
-print(f'result:\n{text_result}')
+result = slvr.execute(text_target, 10)
+print(f'result:\n{result.text}')
