@@ -1,6 +1,7 @@
 import sys
+import pathlib
 
-sys.path.append('../enigma')
+sys.path.append(str(pathlib.Path('./src').resolve()))
 
 import enigma
 

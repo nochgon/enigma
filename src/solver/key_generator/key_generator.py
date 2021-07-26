@@ -40,7 +40,7 @@ class KeyGenerator:
         max_num_rotate_key = pow(self.__encoder.size, self.__enigma.len_drum)
         max_num_reverse = pow(2, self.__enigma.len_drum)
 
-        while self.__num_ring_key <= max_num_ring_key:
+        while self.__num_ring_key < max_num_ring_key:
             # ring_key生成
             num_ring_key = self.__num_ring_key
             ring_key = ''
@@ -49,7 +49,7 @@ class KeyGenerator:
                 ring_key += self.__encoder.decode(num)
                 num_ring_key -= num * pow(self.__encoder.size, rank)
 
-            while self.__num_rotate_key <= max_num_rotate_key:
+            while self.__num_rotate_key < max_num_rotate_key:
                 # rotate_key生成
                 rotate_key = ''
                 num_rotate_key = self.__num_rotate_key
@@ -60,8 +60,8 @@ class KeyGenerator:
 
                 while self.__num_reverse <= max_num_reverse:
                     self.__time_execute += 1
-                    yield (ring_key, rotate_key, self.__num_reverse)
                     self.__num_reverse += 1
+                    yield (ring_key, rotate_key, self.__num_reverse - 1)
                 self.__num_reverse = 0
                 self.__num_rotate_key += 1
             self.__num_rotate_key = 0
