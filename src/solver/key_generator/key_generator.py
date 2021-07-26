@@ -1,4 +1,5 @@
 import pathlib
+import json
 from typing import Tuple, Generator
 
 from ... import enigma
@@ -12,9 +13,14 @@ class KeyGenerator:
         self.__encoder = encoder
         self.__enigma = engm
 
-        path_save = folder_save / self.__name_file_save
-        if path_save.exists():
-            pass
+        self.__path_save = folder_save / self.__name_file_save
+        if self.__path_save.exists():
+            with open(self.__path_save) as f:
+                dict_last_keys = json.load(f)
+                self.__num_ring_key = dict_last_keys['num_ring_key']
+                self.__num_rotate_key = dict_last_keys['num_rotate_key']
+                self.__num_reverse = dict_last_keys['num_reverse']
+                self.__time_execute = dict_last_keys['time_execute']
         else:
             self.__num_ring_key = 0
             self.__num_rotate_key = 0
@@ -62,7 +68,14 @@ class KeyGenerator:
             self.__num_ring_key += 1
 
     def save(self) -> None:
-        pass
+        with open(self.__path_save, 'w') as f:
+            json.dump({
+                'num_ring_key': self.__num_ring_key,
+                'num_rotate_key': self.__num_rotate_key,
+                'num_reverse': self.__num_reverse,
+                'time_execute': self.__time_execute
+            }, f, indent=4)
 
     def reset(self) -> None:
-        pass
+        if self.__path_save.exists:
+            self.__path_save.unlink()
