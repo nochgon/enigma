@@ -2,9 +2,11 @@ from typing import Deque, List, Optional, Tuple
 import pathlib
 import csv
 import collections
+import pickle
 
 from .. import enigma
 from . import replain_text as rt
+from . import key_generator as kg
 
 
 class Solver:
@@ -18,6 +20,7 @@ class Solver:
     __list_keys_result = [
         'ring_key', 'rotate_key', 'reverse_key', 'stdev_result', 'replain_text'
     ]
+    __name_pickle_replain = 'replain.pickle'
 
     def __init__(self, command: str, strs_scramber: List[str],
                  str_reflector: str, positions_scramber: Tuple[int, ...],
@@ -28,6 +31,7 @@ class Solver:
         if command not in self.__dict_command_sorted:
             raise ValueError(f'コマンドが不正: {command}')
 
+        # Enigma生成
         str_sorted = self.__dict_command_sorted[command]
         maps_str_scramber = [
             {
@@ -57,50 +61,49 @@ class Solver:
         # executeで利用するため、メンバーに追加
         self.__encoder = encoder
 
+        # KeyGenerator生成
+        self.__key_generator = kg.KeyGenerator(self.__encoder, self.__enigma,
+                                               folder_result)
+        self.__len_record = self.__key_generator.time_execute
+
     def execute(self, text_target: str, limit_num: Optional[int] = None
                 ) -> rt.ReplainText:
         # サーチ結果はキューに格納し、終了時にcsvへ出力
         deque_result: Deque[rt.ReplainText] = collections.deque()
 
-        # サーチ実行
-        index = 1
+        # 標本偏差が最大の翻訳文を取得。(初回はNone)
+        path_pickle_replain = self.__path_result / self.__name_pickle_replain
         text_replain_result: Optional[rt.ReplainText] = None
-        for num_ring_key in range(pow(self.__encoder.size,
-                                      self.__enigma.len_drum - 1
-                                      )):
-            ring_key = ''
-            for rank in reversed(range(self.__enigma.len_drum - 1)):
-                num = num_ring_key // pow(self.__encoder.size, rank)
-                ring_key += self.__encoder.decode(num)
-                num_ring_key -= num * pow(self.__encoder.size, rank)
-            for num_rotate_key in range(pow(self.__encoder.size,
-                                            self.__enigma.len_drum
-                                            )):
-                rotate_key = ''
-                for rank in reversed(range(self.__enigma.len_drum)):
-                    num = num_rotate_key // pow(self.__encoder.size, rank)
-                    rotate_key += self.__encoder.decode(num)
-                    num_rotate_key -= num * pow(self.__encoder.size, rank)
-                for num_reverse in range(pow(2, self.__enigma.len_drum)):
-                    result = rt.ReplainText(text_target, self.__enigma,
-                                            ring_key, rotate_key, num_reverse)
-                    deque_result.append(result)
-                    index += 1
+        if path_pickle_replain.exists():
+            with open(path_pickle_replain, 'wr') as f:
+                text_replain_result = pickle.load(f)
 
-                    # 標本偏差が最大の翻訳文をキープ
-                    if (not text_replain_result or
-                       text_replain_result.stdev < result.stdev):
-                        text_replain_result = result
+        # サーチ実行
+        self.__len_record = self.__key_generator.time_execute
+        count = 1
+        generator = self.__key_generator.get_keys()
+        for ring_key, rotate_key, num_reverse in generator:
+            result = rt.ReplainText(text_target, self.__enigma,
+                                    ring_key, rotate_key, num_reverse)
+            deque_result.append(result)
+            count += 1
 
-                    # csv出力
+            # 標本偏差が最大の翻訳文をキープ
+            if (not text_replain_result or
+               text_replain_result.stdev < result.stdev):
+                text_replain_result = result
 
-                    if limit_num and limit_num <= index:
-                        self.__export_to_csv(deque_result)
-                        return text_replain_result
+                if limit_num and limit_num <= count:
+                    self.__export_to_csv(deque_result)
+                    self.__key_generator.save()
+                    with open(path_pickle_replain, 'wb') as f:
+                        pickle.dump(text_replain_result, f)
+                    return text_replain_result
 
         if not text_replain_result:
             raise ValueError()
         self.__export_to_csv(deque_result)
+        self.__key_generator.reset()
         return text_replain_result
 
     def __export_to_csv(self, deque_replain_text: Deque[rt.ReplainText]
@@ -108,7 +111,7 @@ class Solver:
         with open(self.__path_result, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(self.__header)
-            index = 1
+            index = self.__len_record
             while len(deque_replain_text):
                 target = deque_replain_text.popleft()
                 result_dict = target.export_result()
