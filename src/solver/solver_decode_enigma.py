@@ -81,7 +81,7 @@ class Solver:
         # 標本偏差が最大の翻訳文を取得。(初回はNone)
         text_replain_result: Optional[rt.ReplainText] = None
         if self.__path_pickle_replain.exists():
-            with open(self.__path_pickle_replain, 'wr') as f:
+            with open(self.__path_pickle_replain, 'rb') as f:
                 text_replain_result = pickle.load(f)
 
         # サーチ実行
@@ -99,17 +99,19 @@ class Solver:
                text_replain_result.stdev < result.stdev):
                 text_replain_result = result
 
-                if limit_num and limit_num <= count:
-                    self.__export_to_csv(deque_result)
-                    self.__key_generator.save()
-                    with open(self.__path_pickle_replain, 'wb') as f:
-                        pickle.dump(text_replain_result, f)
-                    return text_replain_result
+            # 指定された検索回数が終わったら中断
+            if limit_num and limit_num <= count:
+                self.__export_to_csv(deque_result)
+                self.__key_generator.save()
+                with open(self.__path_pickle_replain, 'wb') as f:
+                    pickle.dump(text_replain_result, f)
+                return text_replain_result
 
         if not text_replain_result:
             raise ValueError()
         self.__export_to_csv(deque_result)
         self.__key_generator.reset()
+        print('\n***全検索が完了***')
         return text_replain_result
 
     def __export_to_csv(self, deque_replain_text: Deque[rt.ReplainText]
