@@ -73,7 +73,6 @@ class Solver:
         deque_result: Deque[rt.ReplainText] = collections.deque()
 
         # 標本偏差が最大の翻訳文を取得。(初回はNone)
-        path_pickle_replain = self.__path_result / self.__name_pickle_replain
         text_replain_result: Optional[rt.ReplainText] = None
         if self.__path_pickle_replain.exists():
             with open(self.__path_pickle_replain, 'wr') as f:
@@ -97,7 +96,7 @@ class Solver:
                 if limit_num and limit_num <= count:
                     self.__export_to_csv(deque_result)
                     self.__key_generator.save()
-                    with open(path_pickle_replain, 'wb') as f:
+                    with open(self.__path_pickle_replain, 'wb') as f:
                         pickle.dump(text_replain_result, f)
                     return text_replain_result
 
