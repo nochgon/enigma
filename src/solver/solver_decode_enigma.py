@@ -86,7 +86,7 @@ class Solver:
 
         # サーチ実行
         self.__len_record = self.__key_generator.time_execute
-        count = 1
+        count = 0
         generator = self.__key_generator.get_keys()
         for ring_key, rotate_key, num_reverse in generator:
             result = rt.ReplainText(text_target, self.__enigma,
