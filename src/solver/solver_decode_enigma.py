@@ -116,7 +116,7 @@ class Solver:
                         ) -> None:
         with open(self.__path_result, 'a', newline='') as f:
             writer = csv.writer(f)
-            index = self.__len_record
+            index = self.__len_record + 1
             while len(deque_replain_text):
                 target = deque_replain_text.popleft()
                 result_dict = target.export_result()

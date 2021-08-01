@@ -58,7 +58,7 @@ class KeyGenerator:
                     rotate_key += self.__encoder.decode(num)
                     num_rotate_key -= num * pow(self.__encoder.size, rank)
 
-                while self.__num_reverse <= max_num_reverse:
+                while self.__num_reverse < max_num_reverse:
                     self.__time_execute += 1
                     self.__num_reverse += 1
                     yield (ring_key, rotate_key, self.__num_reverse - 1)
