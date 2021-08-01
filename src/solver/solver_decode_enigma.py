@@ -26,6 +26,7 @@ class Solver:
                  str_reflector: str, positions_scramber: Tuple[int, ...],
                  folder_result: pathlib.Path, name_file: str) -> None:
         self.__path_result = folder_result / f'{name_file}.csv'
+        self.__path_pickle_replain = folder_result / self.__name_pickle_replain
 
         # バリデーション
         if command not in self.__dict_command_sorted:
@@ -74,8 +75,8 @@ class Solver:
         # 標本偏差が最大の翻訳文を取得。(初回はNone)
         path_pickle_replain = self.__path_result / self.__name_pickle_replain
         text_replain_result: Optional[rt.ReplainText] = None
-        if path_pickle_replain.exists():
-            with open(path_pickle_replain, 'wr') as f:
+        if self.__path_pickle_replain.exists():
+            with open(self.__path_pickle_replain, 'wr') as f:
                 text_replain_result = pickle.load(f)
 
         # サーチ実行
