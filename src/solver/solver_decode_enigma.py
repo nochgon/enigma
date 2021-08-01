@@ -25,7 +25,6 @@ class Solver:
     def __init__(self, command: str, strs_scramber: List[str],
                  str_reflector: str, positions_scramber: Tuple[int, ...],
                  folder_result: pathlib.Path, name_file: str) -> None:
-        self.__path_result = folder_result / f'{name_file}.csv'
         self.__path_pickle_replain = folder_result / self.__name_pickle_replain
 
         # バリデーション
@@ -66,6 +65,13 @@ class Solver:
         self.__key_generator = kg.KeyGenerator(self.__encoder, self.__enigma,
                                                folder_result)
         self.__len_record = self.__key_generator.time_execute
+
+        # 結果出力先のCSVファイルの準備
+        self.__path_result = folder_result / f'{name_file}.csv'
+        if not self.__path_result.exists():
+            with open(self.__path_result, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(self.__header)
 
     def execute(self, text_target: str, limit_num: Optional[int] = None
                 ) -> rt.ReplainText:
@@ -108,9 +114,8 @@ class Solver:
 
     def __export_to_csv(self, deque_replain_text: Deque[rt.ReplainText]
                         ) -> None:
-        with open(self.__path_result, 'w', newline='') as f:
+        with open(self.__path_result, 'a', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(self.__header)
             index = self.__len_record
             while len(deque_replain_text):
                 target = deque_replain_text.popleft()
