@@ -1,9 +1,9 @@
 import sys
 import pathlib
 
-sys.path.append(str(pathlib.Path('./src').resolve()))
+sys.path.append(str(pathlib.Path.cwd()))
 
-import enigma
+import src.enigma as enigma
 
 
 def test_enigma(engm: enigma.Enigma, text_target: str, rotate_key: str):

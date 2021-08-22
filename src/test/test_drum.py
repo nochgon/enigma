@@ -4,7 +4,7 @@ from typing import List
 
 sys.path.append(str(pathlib.Path.cwd()))
 
-import enigma.parts as parts
+import src.enigma.parts as parts
 
 
 def test_drum(drum: parts.Drum, rotations_start: List[int],
