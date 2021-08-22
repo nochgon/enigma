@@ -1,4 +1,5 @@
-from typing import List, Tuple
+from typing import List, Tuple, Deque
+from collections import deque
 
 from . import scramber as scrmb
 from . import reflector as rflc
@@ -19,12 +20,14 @@ class Drum:
 
         if positions_scramber:
             # 指定がある場合はその順番でキューに格納
-            self.__list_scrambers = [
-                scrambers[position - 1] for position in positions_scramber
-            ]
+            self.__deque_scrambers: Deque[scrmb.Scramber] = deque()
+            for position in positions_scramber:
+                self.__deque_scrambers.append(self.__map_scramber[position])
         else:
             # スクランバーの順番指定がない場合はそのままキューに格納
-            self.__list_scrambers = scrambers
+            self.__deque_scrambers = deque(scrambers)
+        # 逆スクラップ用のキューを用意
+        self.__deque_scrambers_reverse: Deque[scrmb.Scramber] = deque()
 
         self.__len_scrambers = len(scrambers)
         self.__reflector = reflector
@@ -42,9 +45,9 @@ class Drum:
         if len(set(positions)) != len(positions):
             raise ValueError('positionsに重複あり')
 
-        self.__list_scrambers = [
-            self.__map_scramber[position] for position in positions
-        ]
+        self.__deque_scrambers.clear()
+        for position in positions:
+            self.__deque_scrambers.append(self.__map_scramber[position])
 
     def rotate_scrambers(self, *rotations: int) -> None:
         if len(rotations) != self.__len_scrambers:
@@ -81,17 +84,21 @@ class Drum:
     def transfer(self, num_input) -> int:
         num_o: int = num_input
         # 変換処理
-        for scramber in self.__list_scrambers:
+        while(self.__deque_scrambers):
+            scramber = self.__deque_scrambers.popleft()
             num_o = scramber.scramble(num_o)
+            self.__deque_scrambers_reverse.append(scramber)
         num_o = self.__reflector.reflect(num_o)
-        for scramber in reversed(self.__list_scrambers):
+        while(self.__deque_scrambers_reverse):
+            scramber = self.__deque_scrambers_reverse.pop()
             num_o = scramber.scramble_reverse(num_o)
+            self.__deque_scrambers.append(scramber)
 
         # scrambers回転処理
-        for i in range(len(self.__list_scrambers)):
-            if not self.__list_scrambers[i].add_step():
+        for i in range(len(self.__deque_scrambers)):
+            if not self.__deque_scrambers[i].add_step():
                 break
         return num_o
 
     def __len__(self) -> int:
-        return len(self.__list_scrambers)
+        return len(self.__deque_scrambers)
