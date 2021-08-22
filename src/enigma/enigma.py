@@ -17,6 +17,9 @@ class Enigma:
         return self.__encoder.size
 
     def execute(self, text: str) -> str:
+        """
+        文字列を翻訳する。
+        """
         rsl_text = ''
         for char in text:
             if self.__encoder.is_pass(char):
@@ -28,6 +31,17 @@ class Enigma:
             num = self.__plug_link.convert(num)
             rsl_text += self.__encoder.decode(num)
         return rsl_text
+
+    def transfer(self, char: str) -> str:
+        """
+        一文字だけを変換する
+        """
+        num = self.__encoder.encode(char)
+        num = self.__encoder.encode(char)
+        num = self.__plug_link.convert(num)
+        num = self.__drum.transfer(num)
+        num = self.__plug_link.convert(num)
+        return self.__encoder.decode(num)
 
     def arrange_scrambers(self, *positions: int) -> None:
         self.__drum.arrange_scrambers(*positions)
