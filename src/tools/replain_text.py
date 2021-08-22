@@ -1,6 +1,6 @@
 import statistics
 import collections
-from typing import Any, Dict
+from typing import Any, Deque, Dict
 
 from .. import enigma
 
@@ -21,16 +21,27 @@ class ReplainText:
             else:
                 engm.off_reverse(rank + 1)
 
-        # 復号
+        # 結果の保管場所を確保
+        self.__deque_chars_result: Deque[str] = collections.deque()
+        dict_char_count: Dict[str, int] = dict()
+
+        # 復号とサンプリング
         engm.set_rings(ring_key)
         engm.rotate_scrambers(rotate_key)
-        self.__text = engm.execute(text_target)
+        for char_input in text_target:
+            char_output = engm.transfer(char_input)
+            self.__deque_chars_result.append(char_output)
+
+            if char_output in dict_char_count:
+                dict_char_count[char_output] += 1
+            else:
+                dict_char_count[char_output] = 1
 
         # 標本偏差の産出
-        counter_char = collections.Counter(self.__text.replace(' ', ''))
-        list_count = ([count for count in counter_char.values()] +
-                      [0 for i in range(engm.size_encoder - len(counter_char))]
-                      )
+        list_count = (
+            [count for count in dict_char_count.values()] +
+            [0 for i in range(engm.size_encoder - len(dict_char_count))]
+        )
         self.__stdev = statistics.stdev(list_count)
 
     @property
@@ -39,13 +50,20 @@ class ReplainText:
 
     @property
     def text(self) -> str:
-        return self.__text
+        text_result = ''
+        deque_new: Deque[str] = collections.deque()
+        while(self.__deque_chars_result):
+            char = self.__deque_chars_result.popleft()
+            text_result += char
+            deque_new.append(char)
+        self.__deque_chars_result = deque_new
+        return text_result
 
     def export_result(self) -> Dict[str, Any]:
         return {
             'ring_key': self.__key_ring,
             'rotate_key': self.__key_rotate,
             'reverse_key': self.__key_reverse,
-            'replain_text': self.__text,
+            'replain_text': self.text,
             'stdev_result': self.__stdev
         }
